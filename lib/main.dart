@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-
+import 'calendar.dart';
 
 void main() {
  runApp(const MyApp());
@@ -16,100 +16,104 @@ class MyApp extends StatefulWidget {
 
 
 class _MyAppState extends State<MyApp> {
- @override
- Widget build(BuildContext context) {
-   return MaterialApp(
-     home: Scaffold(
-       appBar: AppBar(
-         title: Text("dialy"),
-         backgroundColor: Colors.green
-       ),
-       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-       floatingActionButton:SizedBox(
-         width: 75,
-         height: 75,
-         child: FloatingActionButton(
-           shape: CircleBorder(),
-           backgroundColor: const Color.fromARGB(255, 204, 255, 146),
-          
-           onPressed: () {},
-           child: Icon(
-             Icons.home,
-             size: 50,
-             color: Color.fromARGB(255, 85, 78, 64),
-           ),
-         ),
-       ),
-       bottomNavigationBar: MenuBottomApp(),
-    
+  int _selectedIndex = 0;
+  final List<Widget> _pages= <Widget>[
+    const CalendarWidget(),
+    const Center(child: Text("編集画面")),
+    const Center(child: Text("ホーム画面")),
+  ];
+
+  void _onItemclicked(int index){
+    setState((){
+      _selectedIndex = index;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      home: Scaffold(
+        appBar: AppBar(
+          title: Text("Dialy App",
+          style: TextStyle(color: const Color.fromARGB(255, 85, 78, 64), fontWeight: FontWeight.bold, fontSize: 24),
+          ),
+          backgroundColor: Colors.green
+        ),
+        body: _pages[_selectedIndex],
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+        floatingActionButton:SizedBox(
+          width: 75,
+          height: 75,
+          child: FloatingActionButton(
+            shape: CircleBorder(),
+            backgroundColor: const Color.fromARGB(255, 204, 255, 146),
+            
+            onPressed: _clickedHomeButton,
+            child: Icon(
+              Icons.home,
+              size: 50,
+              color: Color.fromARGB(255, 85, 78, 64),
+            ),
+          ),
+        ),
+        bottomNavigationBar: MenuBottomApp(onclick: _onItemclicked),
+      
 
 
-     ),
-   );
- }
+      ),
+    );
+  }
+  void _clickedHomeButton(){
+    debugPrint("Home button clicked");
+    setState(() { 
+      _selectedIndex = 2;
+    });
+  }
 }
 
 
 
-
 class MenuBottomApp extends StatelessWidget {
- const MenuBottomApp({super.key});
+  
+
+  final Function(int) onclick;
+  const MenuBottomApp({super.key, required this.onclick});
 
 
- @override
- Widget build(BuildContext context) {
-   return BottomAppBar(
-     shape: AutomaticNotchedShape(
-           RoundedRectangleBorder(),
-           StadiumBorder(
-             side: BorderSide(),
-           ),
-     ),
-     color: const Color.fromARGB(255, 85, 78, 64),
-     child: Row(
-       mainAxisAlignment: MainAxisAlignment.center,
-       children: <Widget>[
-         IconButton(
-           icon: Icon(
-               Icons.calendar_month,
-               color:  Color.fromARGB(255, 219, 201, 162),
-               size: 40
-             ),
-           onPressed: () {
-             debugPrint("clicked");
-           },
-         ),
-         const SizedBox(width: 20),
-         IconButton(
-           icon: Icon(
-               Icons.mode_edit,
-               color:  Color.fromARGB(255, 219, 201, 162),
-               size: 40
-             ),
-           onPressed: () {},
-         ),
-         const SizedBox(width: 100),
-         IconButton(
-           icon: Icon(
-               Icons.sunny,
-               color:  Color.fromARGB(255, 219, 201, 162),
-               size: 40
-             ),
-           onPressed: () {},
-         ),
-         const SizedBox(width: 20),
-         IconButton(
-           icon: Icon(
-               Icons.person,
-               color:  Color.fromARGB(255, 219, 201, 162),
-               size: 40
-             ),
-           onPressed: () {},
-         ),
-       ],
-     ),
-   );
- }
+  @override
+  Widget build(BuildContext context) {
+    return BottomAppBar(
+      shape: AutomaticNotchedShape(
+            RoundedRectangleBorder(),
+            StadiumBorder(
+              side: BorderSide(),
+            ),
+      ),
+      color: const Color.fromARGB(255, 85, 78, 64),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          IconButton(
+            icon: Icon(
+                Icons.calendar_month,
+                color:  Color.fromARGB(255, 219, 201, 162),
+                size: 40
+              ),
+            onPressed: () => onclick(0),
+          ),
+          const SizedBox(width: 150),
+          IconButton(
+            icon: Icon(
+                Icons.mode_edit,
+                color:  Color.fromARGB(255, 219, 201, 162),
+                size: 40
+              ),
+            onPressed: () => onclick(1),
+          ),
+        ],
+      ),
+    );
+  }
 }
 
 
