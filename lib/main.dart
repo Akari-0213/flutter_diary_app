@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_diary/edit_diary.dart';
 import 'calendar.dart';
 
 void main() {
@@ -19,7 +20,7 @@ class _MyAppState extends State<MyApp> {
   int _selectedIndex = 0;
   final List<Widget> _pages= <Widget>[
     const CalendarWidget(),
-    const Center(child: Text("編集画面")),
+    const EditDiaryWidget(),
     const Center(child: Text("ホーム画面")),
   ];
 
