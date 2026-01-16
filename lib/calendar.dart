@@ -16,7 +16,8 @@ final eventsData = {
 
 
 class CalendarWidget extends StatefulWidget {
-  const CalendarWidget({super.key});
+  final DateTime now;
+  const CalendarWidget({super.key, required this.now});
 
   @override
   State<CalendarWidget> createState() => _CalendarWidgetState();
@@ -30,8 +31,8 @@ class _CalendarWidgetState extends State<CalendarWidget> {
   @override
   void initState() {
     super.initState();
-    final now = DateTime.now();
-    _selectedDay = DateTime.utc(now.year, now.month, now.day);
+    // final now = DateTime.now();
+    _selectedDay = DateTime.utc(widget.now.year, widget.now.month, widget.now.day);
 
     _eventsOfSelectedDay = eventsData[_selectedDay] ?? [];
   }

@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_diary/edit_diary.dart';
+import 'package:flutter_application_diary/home.dart';
 import 'calendar.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
 
 void main() {
  runApp(const MyApp());
@@ -18,10 +21,11 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   int _selectedIndex = 0;
-  final List<Widget> _pages= <Widget>[
-    const CalendarWidget(),
-    const EditDiaryWidget(),
-    const Center(child: Text("ホーム画面")),
+  final now = DateTime.now();
+  late final List<Widget> _pages= <Widget>[
+    CalendarWidget(now: now),
+    EditDiaryWidget(),
+    HomeWidget(now: now),
   ];
 
   void _onItemclicked(int index){
