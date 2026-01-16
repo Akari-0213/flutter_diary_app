@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_application_diary/edit_diary.dart';
 import 'package:flutter_application_diary/home.dart';
 import 'calendar.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 
-void main() {
+void main() async{
+ WidgetsFlutterBinding.ensureInitialized();
+ await loadEvents();
+ await loadDiaries();
  runApp(const MyApp());
 }
 

@@ -1,8 +1,44 @@
 import 'package:flutter/material.dart';
+import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_application_diary/diary_add.dart';
 
 
-final List<Map<String, dynamic>> diaryDataList = [];
+List<Map<String, dynamic>> diaryDataList = [];
+Future<void> saveDiaries() async {
+  final prefs = await SharedPreferences.getInstance();
+  final List<Map<String, dynamic>> exportList = diaryDataList.map((item) {
+    // もとのMapをコピーしてDateTime型をString型に変換
+    final Map<String, dynamic> newItem = Map.from(item);
+    if (newItem['diaryTime'] is DateTime) {
+      newItem['diaryTime'] = (newItem['diaryTime'] as DateTime).toIso8601String();
+    }
+    return newItem;
+  }).toList();
+
+  await prefs.setString('diary_data', jsonEncode(exportList));
+}
+
+
+Future<void> loadDiaries() async {
+  final prefs = await SharedPreferences.getInstance();
+  final String? jsonString = prefs.getString('diary_data');
+  
+  if (jsonString != null) {
+    final List<dynamic> decodedList = jsonDecode(jsonString);
+    
+    diaryDataList = decodedList.map((item) {
+      final Map<String, dynamic> mapItem = Map<String, dynamic>.from(item);
+      // 文字列として保存された日付をDateTime型に復元
+      if (mapItem['diaryTime'] != null && mapItem['diaryTime'] is String) {
+        mapItem['diaryTime'] = DateTime.parse(mapItem['diaryTime']);
+      }
+      return mapItem;
+    }).toList();
+  }
+  
+}
+
 
 class EditDiaryWidget extends StatefulWidget {
   const EditDiaryWidget({super.key});
@@ -48,6 +84,7 @@ class _EditDiaryWidgetState extends State<EditDiaryWidget> {
                   setState(() {
                     diaryDataList.add(diaryData);
                   });
+                  saveDiaries();
                 }
               },
               backgroundColor: const Color.fromARGB(255, 204, 255, 146),
@@ -58,6 +95,7 @@ class _EditDiaryWidgetState extends State<EditDiaryWidget> {
       );
   }
 }
+
 
 class _EditedCard extends StatelessWidget {
   const _EditedCard({required this.cardName, required this.cardContent, required this.diaryTime});

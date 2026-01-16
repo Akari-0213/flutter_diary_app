@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/material.dart';
 
 
@@ -30,12 +31,23 @@ class _HomeWidgetState extends State<HomeWidget> {
   @override
   void initState(){
     super.initState();
-    calculateStreak();
+    _setupLoginStreak();
     getWeather();
   }
 
-  void calculateStreak(){
-     final difference = widget.now.difference(lastLoginDay).inDays;
+  Future<void> _setupLoginStreak() async {
+    final prefs = await SharedPreferences.getInstance();
+
+    String? lastSaved = prefs.getString('last_login_day');
+    int savedStreak =  prefs.getInt('login_streak') ?? 0;
+    if (lastSaved != null) {
+      debugPrint(lastSaved);
+      lastLoginDay = DateTime.parse(lastSaved);
+      loginStreak = savedStreak;
+    }
+    final today = DateTime.utc(widget.now.year, widget.now.month, widget.now.day);
+    final lastLoginUtc = DateTime.utc(lastLoginDay.year, lastLoginDay.month, lastLoginDay.day);
+    final difference = today.difference(lastLoginUtc).inDays;
     setState(() {
       if(difference == 1){
         loginStreak++;
@@ -45,6 +57,9 @@ class _HomeWidgetState extends State<HomeWidget> {
         loginStreak = 0;
       }
     });
+
+    await prefs.setString('last_login_day', today.toIso8601String());
+    await prefs.setInt('login_streak', loginStreak);
   }
 
   Future<void> getWeather() async{

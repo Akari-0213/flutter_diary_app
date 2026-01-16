@@ -1,18 +1,36 @@
 import 'package:flutter/material.dart';
+import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_application_diary/calender_add_event.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 
-final eventsData = {
-  DateTime.utc(2026, 1, 11): [
-    {'title': '初詣', 'description': '家族と'},
-    {'title': '買い物', 'description': '牛肉, 卵, 白菜'},
-  ],
-  DateTime.utc(2026, 1, 23): [
-    {'title': '課題提出', 'description': 'モバイルプログラミング'},
-    {'title': '会議', 'description': '研究室'},
-  ]
-};
+Map<DateTime, List<Map<String, String>>> eventsData = {};
+
+Future<void> saveEvents() async {
+  final prefs = await SharedPreferences.getInstance();
+  // DateTimeを文字列に変換して保存
+  Map<String, dynamic> exportData = eventsData.map(
+    (key, value) => MapEntry(key.toIso8601String(), value)
+  );
+  await prefs.setString('events_data', jsonEncode(exportData));
+}
+
+Future<void> loadEvents() async {
+  final prefs = await SharedPreferences.getInstance();
+  final String? jsonString = prefs.getString('events_data');
+  if (jsonString != null) {
+    Map<String, dynamic> decoded = jsonDecode(jsonString);
+    eventsData = decoded.map((key, value) {
+      return MapEntry(
+        DateTime.parse(key),
+        List<Map<String, String>>.from(
+          (value as List).map((e) => Map<String, String>.from(e))
+        ),
+      );
+    });
+  }
+}
 
 
 class CalendarWidget extends StatefulWidget {
@@ -80,10 +98,10 @@ class _CalendarWidgetState extends State<CalendarWidget> {
                             _eventsOfSelectedDay.removeAt(index);
                             eventsData[_selectedDay] = _eventsOfSelectedDay;
                             debugPrint('${eventsData[_selectedDay]}');
+                            saveEvents();
                           });
                         },),
                     ),
-
                   );
                 },
               ),
@@ -111,9 +129,8 @@ class _CalendarWidgetState extends State<CalendarWidget> {
                   });
                 });
                 _eventsOfSelectedDay = eventsData[_selectedDay]!;
+                saveEvents();
               }
-              
-              
             },
             backgroundColor: const Color.fromARGB(255, 204, 255, 146),
             child: const Icon(Icons.add, color: Color.fromARGB(255, 85, 78, 64)),
