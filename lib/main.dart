@@ -22,7 +22,7 @@ class MyApp extends StatefulWidget {
 
 
 class _MyAppState extends State<MyApp> {
-  int _selectedIndex = 0;
+  int _selectedIndex = 2;
   final now = DateTime.now();
   late final List<Widget> _pages= <Widget>[
     CalendarWidget(now: now),
@@ -64,14 +64,10 @@ class _MyAppState extends State<MyApp> {
           ),
         ),
         bottomNavigationBar: MenuBottomApp(onclick: _onItemclicked),
-      
-
-
       ),
     );
   }
   void _clickedHomeButton(){
-    debugPrint("Home button clicked");
     setState(() { 
       _selectedIndex = 2;
     });
