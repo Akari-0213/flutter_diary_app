@@ -64,7 +64,7 @@ class _HomeWidgetState extends State<HomeWidget> {
 
   Future<void> getWeather() async{
     final dio = Dio();
-    String key = "e3579986de3af42d51b49b350dfcf3ed";
+    String key = "";//openweathermapのapiキーを入れる
     double lat = 35.4912; //緯度
     double lon = 139.2917; //経度
     try {
