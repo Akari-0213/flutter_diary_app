@@ -56,25 +56,30 @@ class _HomeWidgetState extends State<HomeWidget> {
         final response = await dio.get(
           "https://api.openweathermap.org/data/2.5/weather?lat=$lat&lon=$lon&appid=$key"
         );
-        final Map<String, dynamic> data = response.data;
-        final String resDataWeather = data["weather"][0]["main"];
-        final num resDataTemperture = data["main"]["temp"];
-        double tempDouble = resDataTemperture.toDouble();
+      final Map<String, dynamic> data = response.data;
 
-        // setStateを呼ぶ前に画面がまだ存在するか
-        if (!mounted) return;
+        if (data["weather"] != null && (data["weather"] as List).isNotEmpty) {
+          final String resDataWeather = data["weather"][0]["main"];
+          final num resDataTemperture = data["main"]["temp"];
+          double tempDouble = resDataTemperture.toDouble();
 
-        setState(() {
-          if (weatherTaranslation.containsKey(resDataWeather)) {
-            weatherName = weatherTaranslation[resDataWeather]![0];
-            iconName = weatherTaranslation[resDataWeather]![1];
-          } else {
-            weatherName = resDataWeather;
-            iconName = Icons.help_outline;
-          }
-          double tempCelsius = tempDouble - 273.15;
-          tempertureName = tempCelsius.toStringAsFixed(1);
-        });
+          if (!mounted) return;
+
+          setState(() {
+            if (weatherTaranslation.containsKey(resDataWeather)) {
+              weatherName = weatherTaranslation[resDataWeather]![0];
+              iconName = weatherTaranslation[resDataWeather]![1];
+            } else {
+              weatherName = resDataWeather;
+              iconName = Icons.help_outline;
+            }
+            double tempCelsius = tempDouble - 273.15;
+            tempertureName = tempCelsius.toStringAsFixed(1);
+          });
+        } else {
+          // weatherデータが想定外の形式だった場合
+          throw Exception("天気データが見つかりません");
+        }
       } catch (e) {
         // 通信エラーやAPIキーミスなどで失敗した場合の処理
         debugPrint("天気取得エラー: $e");
@@ -96,7 +101,7 @@ class _HomeWidgetState extends State<HomeWidget> {
             width: 600, 
             height: 150,
             child: Column(
-              children: [
+              children:[
                 SizedBox(height: 25),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -111,7 +116,7 @@ class _HomeWidgetState extends State<HomeWidget> {
                 Text("$loginStreak",
                     style: TextStyle(color: const Color.fromARGB(255, 85, 78, 64),fontSize: 30, fontWeight: FontWeight.bold)
                   ),
-              ]
+              ],
             ),
           ),
         ),
@@ -134,7 +139,7 @@ class _HomeWidgetState extends State<HomeWidget> {
                 Text("温度：$tempertureName℃",
                     style: TextStyle(color: const Color.fromARGB(255, 85, 78, 64),fontSize: 30, fontWeight: FontWeight.bold)
                   ),
-              ]
+              ],
             ),
           ),
         ),
