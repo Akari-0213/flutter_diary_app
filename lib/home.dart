@@ -52,7 +52,7 @@ class _HomeWidgetState extends State<HomeWidget> {
       if(difference == 1){
         loginStreak++;
       }else if(difference == 0){
-        return;
+        
       }else{
         loginStreak = 0;
       }
